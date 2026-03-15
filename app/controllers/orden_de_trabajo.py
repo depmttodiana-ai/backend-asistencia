@@ -285,47 +285,38 @@ def generar_documento_orden(
     # Formato de fecha
     fecha_str = orden.fecha.strftime("%d/%m/%Y")
 
-    # 1. Párrafo de Analis Ramira
-    p1 = doc.add_paragraph()
-    run1 = p1.add_run("Yo Analis Ramira de talento humano firma una linea debajo")
-    run1.font.size = Pt(12)
-    p1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-
-    # Línea de firma para Analis
-    p_linea1 = doc.add_paragraph()
-    p_linea1.paragraph_format.space_before = Pt(20)
-    run_linea1 = p_linea1.add_run("______________________________")
-    p_linea1.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    p_firma1 = doc.add_paragraph()
-    run_firma1 = p_firma1.add_run("Analis Ramira\nTalento Humano")
-    run_firma1.bold = True
-    p_firma1.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # ==================== LOGO ====================
+    import os
+    logo_path = "/home/dark/Escritorio/void/mtto/backend/assets/logo.jpg"
+    if os.path.exists(logo_path):
+        logo_para = doc.add_paragraph()
+        logo_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        logo_run = logo_para.add_run()
+        try:
+            # El ancho de la página es 8.5, menos 1 de margen por cada lado = 6.5 pulgadas útiles
+            logo_run.add_picture(logo_path, width=Inches(6.5))
+        except Exception:
+            pass
 
     doc.add_paragraph()  # Espacio
 
-    # 2. Párrafo de Fernelis Barragan
-    p2 = doc.add_paragraph()
-    texto_fernelis = (
-        f"Yo Fernelis Barragan coordinador de mantenimiento, en responsabilidad de lo establecido "
-        f"en el trabajo según la ley orgánica de los trabajadores presento las actividades realizadas "
-        f"en el día {fecha_str}, presento que se realizaron los siguientes trabajos en la jornada del día {fecha_str}."
+    # ==================== FECHA ====================
+    p_fecha = doc.add_paragraph()
+    p_fecha.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    run_fecha = p_fecha.add_run(f"Fecha: {fecha_str}")
+    run_fecha.font.size = Pt(12)
+
+    doc.add_paragraph()  # Espacio
+
+    # ==================== PÁRRAFO PRINCIPAL ====================
+    p_main = doc.add_paragraph()
+    texto_main = (
+        "Yo Fernelis Barragan _________________________ le hago llegar a la oficina de talento humano encargado por la sr/a joyce pedroso.\n"
+        "Donde se hace constar que se realizaron las siguientes actividades,"
     )
-    run2 = p2.add_run(texto_fernelis)
-    run2.font.size = Pt(12)
-    p2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    p2.paragraph_format.space_before = Pt(20)
-
-    # 3. Línea de firma para Fernelis (Centrada debajo)
-    p_linea2 = doc.add_paragraph()
-    p_linea2.paragraph_format.space_before = Pt(40)
-    run_linea2 = p_linea2.add_run("______________________________")
-    p_linea2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    p_firma2 = doc.add_paragraph()
-    run_firma2 = p_firma2.add_run("Fernelis Barragan\nCoordinador de Mantenimiento")
-    run_firma2.bold = True
-    p_firma2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run_main = p_main.add_run(texto_main)
+    run_main.font.size = Pt(12)
+    p_main.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
     doc.add_paragraph()  # Espacio
 
@@ -362,6 +353,19 @@ def generar_documento_orden(
             row_cells = table.add_row().cells
             row_cells[0].text = a_realizar if a_realizar else "N/A"
             row_cells[1].text = realizado if realizado else "N/A"
+
+    # ==================== FIRMA FINAL ====================
+    doc.add_paragraph()  # Espacio
+    
+    p_linea_final = doc.add_paragraph()
+    p_linea_final.paragraph_format.space_before = Pt(40)
+    run_linea_final = p_linea_final.add_run("______________________________")
+    p_linea_final.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    p_firma_final = doc.add_paragraph()
+    run_firma_final = p_firma_final.add_run("Fernelis Barragan")
+    run_firma_final.bold = True
+    p_firma_final.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     # Guardar en memoria
     file_stream = io.BytesIO()

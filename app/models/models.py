@@ -1,6 +1,6 @@
 from typing import Optional
 from datetime import date
-from sqlalchemy import Column, Integer, String, Date, Numeric, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, Numeric, ForeignKey, DateTime
 
 # from sqlalchemy.orm import relationship
 from app.core.database import Base
@@ -109,3 +109,6 @@ class User(Base):
     username: str = Column(String, unique=True, index=True)
     hashed_password: str = Column(String)
     role: str = Column(String)  # 'admin', 'coordinador', 'supervisor'
+    email: str = Column(String, unique=True, index=True, nullable=True)
+    reset_password_token: str = Column(String, nullable=True)
+    reset_password_expires: str = Column(DateTime, nullable=True)

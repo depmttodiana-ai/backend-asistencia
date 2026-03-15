@@ -341,30 +341,16 @@ def generar_reporte_word(
     section.left_margin = Inches(0.75)
     section.right_margin = Inches(0.75)
 
-    # ==================== CABECERA ====================
-    header_para = doc.add_paragraph()
-    header_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    header_run = header_para.add_run("REPÚBLICA BOLIVARIANA DE VENEZUELA\n")
-    header_run.bold = True
-    header_run.font.size = Pt(14)
-    header_run.font.color.rgb = RGBColor(0, 51, 102)  # Azul oscuro
-
-    header_run2 = header_para.add_run("ALIMENTOS Y GRASAS OCCIDENTE")
-    header_run2.bold = True
-    header_run2.font.size = Pt(16)
-    header_run2.font.color.rgb = RGBColor(204, 0, 0)  # Rojo
-
     # ==================== LOGO ====================
     # Intentar agregar logo si existe
-    logo_path = "/home/dark/Escritorio/void/mtto/backend/assets/logo.png"
+    logo_path = "/home/dark/Escritorio/void/mtto/backend/assets/logo.jpg"
     if os.path.exists(logo_path):
         logo_para = doc.add_paragraph()
         logo_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
         logo_run = logo_para.add_run()
         try:
-            # Nota: El usuario mencionó width=1985 y height=400,
-            # pero 1985px es demasiado ancho, asumo que quiso decir 195px o 1.95 inches
-            logo_run.add_picture(logo_path, width=Inches(1.95), height=Inches(1.2))
+            # El ancho de la página es 8.5, menos 0.75 de margen por cada lado = 7 pulgadas útiles
+            logo_run.add_picture(logo_path, width=Inches(7.0))
         except Exception:
             # Si hay error al cargar la imagen, continuar sin ella
             pass
@@ -478,7 +464,7 @@ def generar_reporte_word(
     footer_para = doc.add_paragraph()
     footer_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
     footer_run = footer_para.add_run(
-        f"___________________________\nGenerado el {date.today().strftime('%d/%m/%Y')}"
+        "___________________________\nFERNELY BARRAGAN"
     )
     footer_run.font.size = Pt(10)
     footer_run.font.color.rgb = RGBColor(128, 128, 128)  # Gris

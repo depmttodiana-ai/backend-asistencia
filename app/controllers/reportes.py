@@ -6,6 +6,7 @@ from app.core.auth_deps import coordinador_or_admin
 from app.controllers.asistencia import generar_reporte_nomina_comun
 from app.models.models_empleados import Empleado as EmpleadoReal
 import io
+import os
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.drawing.image import Image as ExcelImage
@@ -335,7 +336,7 @@ def dibujar_firma_fernelis(ws, fila_actual, ancho_cols="Y"):
     fila_actual += 1
     ws.merge_cells(f"A{fila_actual}:{ancho_cols}{fila_actual}")
     c_firma = ws[f"A{fila_actual}"]
-    c_firma.value = "FERNELIS"
+    c_firma.value = "FERNELY BARRAGAN"
     c_firma.font = Font(bold=True, size=11)
     c_firma.alignment = Alignment(horizontal="center")
 
@@ -544,7 +545,14 @@ async def descargar_reporte_empleados(
     reporte_data = generar_reporte_nomina_comun(
         fecha_desde, fecha_hasta, todos_empleados, db
     )
-    logo_bytes = await logo.read() if logo else None
+    
+    logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "assets", "logo.jpg")
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as f:
+            logo_bytes = f.read()
+    else:
+        logo_bytes = await logo.read() if logo else None
+
     grupos = clasificar_empleados(reporte_data)
     excel_file = crear_excel_empleados(grupos, fecha_desde, fecha_hasta, logo_bytes)
     return StreamingResponse(
@@ -571,7 +579,14 @@ async def descargar_reporte_jefes(
     reporte_data = generar_reporte_nomina_comun(
         fecha_desde, fecha_hasta, todos_empleados, db
     )
-    logo_bytes = await logo.read() if logo else None
+
+    logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "assets", "logo.jpg")
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as f:
+            logo_bytes = f.read()
+    else:
+        logo_bytes = await logo.read() if logo else None
+
     grupos = clasificar_empleados(reporte_data)
     excel_file = crear_excel_coordinadores(grupos, fecha_desde, fecha_hasta, logo_bytes)
     return StreamingResponse(
@@ -602,7 +617,14 @@ async def descargar_resumen_he_empleados(
     reporte_data = generar_reporte_nomina_comun(
         fecha_desde, fecha_hasta, todos_empleados, db
     )
-    logo_bytes = await logo.read() if logo else None
+
+    logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "assets", "logo.jpg")
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as f:
+            logo_bytes = f.read()
+    else:
+        logo_bytes = await logo.read() if logo else None
+
     grupos = clasificar_empleados(reporte_data)
 
     excel_file = crear_excel_resumen_he_empleados(
@@ -637,7 +659,14 @@ async def descargar_resumen_he_jefes(
     reporte_data = generar_reporte_nomina_comun(
         fecha_desde, fecha_hasta, todos_empleados, db
     )
-    logo_bytes = await logo.read() if logo else None
+
+    logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "assets", "logo.jpg")
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as f:
+            logo_bytes = f.read()
+    else:
+        logo_bytes = await logo.read() if logo else None
+
     grupos = clasificar_empleados(reporte_data)
 
     excel_file = crear_excel_resumen_he_jefes(
