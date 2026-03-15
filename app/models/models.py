@@ -110,5 +110,7 @@ class User(Base):
     hashed_password: str = Column(String)
     role: str = Column(String)  # 'admin', 'coordinador', 'supervisor'
     email: str = Column(String, unique=True, index=True, nullable=True)
+    nombre: str = Column(String, nullable=True)
+    apellido: str = Column(String, nullable=True)
     reset_password_token: str = Column(String, nullable=True)
     reset_password_expires: str = Column(DateTime, nullable=True)

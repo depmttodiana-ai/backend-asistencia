@@ -26,7 +26,7 @@ def login(
 from pydantic import BaseModel
 import secrets
 from datetime import datetime, timedelta
-from app.core.auth_deps import get_current_user
+from app.core.auth_deps import get_current_user, admin_only
 from app.core.email import send_reset_password_email
 from app.core.security import get_password_hash
 
@@ -43,6 +43,54 @@ class ResetPasswordRequest(BaseModel):
 
 class UpdateEmailRequest(BaseModel):
     email: str
+
+class UserCreateAdmin(BaseModel):
+    nombre: str
+    apellido: str
+    email: str
+    role: str
+
+@router.post("/register")
+def register_user(request: UserCreateAdmin, current: User = Depends(admin_only), db: Session = Depends(get_db)):
+    # Validar role
+    valid_roles = ["admin", "coordinador", "supervisor"]
+    role_lower = request.role.lower().strip()
+    if role_lower not in valid_roles:
+        raise HTTPException(status_code=400, detail=f"Rol inválido. Debe ser uno de: {valid_roles}")
+        
+    # Validar que si mandaron email no esté duplicado
+    if db.query(User).filter(User.email == request.email).first():
+         raise HTTPException(status_code=400, detail="El correo ya se encuentra registrado")
+         
+    # Generar username base (ej. Juan Perez -> juan.perez)
+    base_username = f"{request.nombre.lower().split()[0]}.{request.apellido.lower().split()[0]}"
+    final_username = base_username
+    counter = 1
+    while db.query(User).filter(User.username == final_username).first():
+         final_username = f"{base_username}{counter}"
+         counter += 1
+
+    # Crear usuario con contraseña estándar: "Mtto2025!" (Se le puede pedir que la cambie luego)
+    std_pass = "Mtto2025!"
+    hashed_p = get_password_hash(std_pass)
+
+    new_user = User(
+         username=final_username,
+         hashed_password=hashed_p,
+         role=role_lower,
+         email=request.email,
+         nombre=request.nombre.strip(),
+         apellido=request.apellido.strip()
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return {
+        "message": "Usuario creado exitosamente",
+        "username": base_username,
+        "default_password": std_pass,
+        "role": new_user.role
+    }
 
 @router.post("/change-password")
 def change_password(request: ChangePasswordRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
